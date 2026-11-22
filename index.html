@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiliconPen Motion Controller</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #10141c;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 650px;
+}
+
+h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    color: #9ba6b8;
+    margin-bottom: 30px;
+}
+
+button {
+    background: #246bfe;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    margin: 10px;
+}
+
+.readings {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 30px 0;
+}
+
+.reading {
+    background: #202938;
+    padding: 20px 5px;
+    border-radius: 12px;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.label {
+    color: #9ba6b8;
+    font-size: 13px;
+}
+
+.steering {
+    background: #202938;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.track {
+    height: 14px;
+    background: #394456;
+    border-radius: 10px;
+    position: relative;
+    margin: 25px 10px 10px;
+}
+
+.marker {
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 5px;
+    height: 28px;
+    background: #35d6a0;
+    transform: translateX(-50%);
+}
+
+.status {
+    color: #35d6a0;
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>SILICONPEN</h1>
+    <div class="subtitle">MOTION CONTROLLER · SENSOR TEST</div>
+
+    <button id="start">ENABLE MOTION SENSOR</button>
+
+    <div class="readings">
+        <div class="reading">
+            <div class="label">ALPHA</div>
+            <div class="value" id="alpha">--</div>
+        </div>
+
+        <div class="reading">
+            <div class="label">BETA</div>
+            <div class="value" id="beta">--</div>
+        </div>
+
+        <div class="reading">
+            <div class="label">GAMMA</div>
+            <div class="value" id="gamma">--</div>
+        </div>
+    </div>
+
+    <div class="steering">
+        <div class="label">STEERING ANGLE (GAMMA)</div>
+        <div class="value" id="steering">0°</div>
+
+        <div class="track">
+            <div class="marker" id="marker"></div>
+        </div>
+
+        <div class="label">LEFT ← NEUTRAL → RIGHT</div>
+    </div>
+
+    <div class="status" id="status">Sensor not enabled</div>
+
+</div>
+
+<script>
+const startButton = document.getElementById("start");
+
+function handleOrientation(event) {
+    const alpha = event.alpha;
+    const beta = event.beta;
+    const gamma = event.gamma;
+
+    if (alpha === null || beta === null || gamma === null) {
+        document.getElementById("status").textContent =
+            "Orientation data unavailable";
+        return;
+    }
+
+    document.getElementById("alpha").textContent =
+        alpha.toFixed(1) + "°";
+
+    document.getElementById("beta").textContent =
+        beta.toFixed(1) + "°";
+
+    document.getElementById("gamma").textContent =
+        gamma.toFixed(1) + "°";
+
+    document.getElementById("steering").textContent =
+        gamma.toFixed(1) + "°";
+
+    // Visualise gamma within a -45° to +45° range.
+    const limited = Math.max(-45, Math.min(45, gamma));
+    const position = ((limited + 45) / 90) * 100;
+
+    document.getElementById("marker").style.left =
+        position + "%";
+
+    document.getElementById("status").textContent =
+        "Motion sensor active";
+}
+
+startButton.addEventListener("click", async () => {
+    try {
+        if (typeof DeviceOrientationEvent === "undefined") {
+            document.getElementById("status").textContent =
+                "Device orientation is not supported";
+            return;
+        }
+
+        // Required by some browsers, particularly iOS.
+        if (typeof DeviceOrientationEvent.requestPermission === "function") {
+            const permission =
+                await DeviceOrientationEvent.requestPermission();
+
+            if (permission !== "granted") {
+                document.getElementById("status").textContent =
+                    "Motion permission denied";
+                return;
+            }
+        }
+
+        window.addEventListener(
+            "deviceorientation",
+            handleOrientation
+        );
+
+        document.getElementById("status").textContent =
+            "Waiting for sensor data...";
+    } catch (error) {
+        document.getElementById("status").textContent =
+            "Error: " + error.message;
+    }
+});
+</script>
+
+</body>
+</html>
