@@ -169,12 +169,22 @@ function handleOrientation(event) {
     document.getElementById("steering").textContent =
         gamma.toFixed(1) + "°";
 
-    // Visualise gamma within a -45° to +45° range.
-    const limited = Math.max(-45, Math.min(45, gamma));
-    const position = ((limited + 45) / 90) * 100;
+    const neutralAngle = -80;
 
-    document.getElementById("marker").style.left =
-        position + "%";
+// Relative angle from the neutral holding position
+let steeringAngle = gamma - neutralAngle;
+
+// Limit steering range
+steeringAngle = Math.max(-35, Math.min(35, steeringAngle));
+
+document.getElementById("steering").textContent =
+    steeringAngle.toFixed(1) + "°";
+
+// Convert steering angle to marker position
+const position = ((steeringAngle + 35) / 70) * 100;
+
+document.getElementById("marker").style.left =
+    position + "%";
 
     document.getElementById("status").textContent =
         "Motion sensor active";
