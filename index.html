@@ -3,224 +3,429 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1,
+               user-scalable=no, viewport-fit=cover">
+
 <title>SiliconPen Motion Controller</title>
 
 <style>
+:root {
+    --bg: #10141c;
+    --panel: #1d2634;
+    --panel2: #293548;
+    --text: #f4f6fa;
+    --muted: #98a6ba;
+    --green: #35d6a0;
+    --blue: #4385ff;
+    --orange: #ffad55;
+    --red: #ff626d;
+}
+
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 body {
     margin: 0;
-    min-height: 100vh;
-    background: #10141c;
-    color: white;
+    background: var(--bg);
+    color: var(--text);
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.container {
-    width: 90%;
-    max-width: 650px;
-}
-
-h1 {
-    font-size: 24px;
-    letter-spacing: 2px;
-}
-
-.subtitle {
-    color: #9ba6b8;
-    margin-bottom: 30px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    touch-action: manipulation;
 }
 
 button {
-    background: #246bfe;
-    color: white;
     border: none;
-    padding: 15px 25px;
-    border-radius: 10px;
-    font-size: 16px;
-    margin: 10px;
-}
-
-.readings {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 30px 0;
-}
-
-.reading {
-    background: #202938;
-    padding: 20px 5px;
-    border-radius: 12px;
-}
-
-.value {
-    font-size: 28px;
+    color: var(--text);
     font-weight: bold;
-    margin-top: 10px;
+    cursor: pointer;
+    touch-action: none;
 }
 
-.label {
-    color: #9ba6b8;
-    font-size: 13px;
+.app {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 18px;
+    gap: 12px;
+    max-width: 1100px;
+    margin: auto;
 }
 
-.steering {
-    background: #202938;
-    border-radius: 12px;
-    padding: 20px;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.brand span {
+    color: var(--green);
+}
+
+.status {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.status::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+    margin-right: 7px;
+}
+
+.status.ready::before {
+    background: var(--green);
+}
+
+.main {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.panel {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.section-title {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+
+.steering-value {
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.steering-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 4px;
 }
 
 .track {
-    height: 14px;
-    background: #394456;
-    border-radius: 10px;
     position: relative;
-    margin: 25px 10px 10px;
+    height: 18px;
+    border-radius: 20px;
+    background: #38465a;
+    margin: 32px 8px 10px;
+}
+
+.track::after {
+    content: "";
+    position: absolute;
+    height: 32px;
+    width: 3px;
+    left: 50%;
+    top: -7px;
+    background: white;
+    border-radius: 5px;
 }
 
 .marker {
     position: absolute;
-    top: -7px;
     left: 50%;
-    width: 5px;
+    top: -5px;
     height: 28px;
-    background: #35d6a0;
+    width: 7px;
+    border-radius: 5px;
+    background: var(--green);
     transform: translateX(-50%);
+    z-index: 2;
 }
 
-.status {
-    color: #35d6a0;
+.directions {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.calibrate {
+    background: var(--blue);
+    padding: 13px;
+    border-radius: 9px;
+    margin-top: auto;
+}
+
+.settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
     margin-top: 20px;
+}
+
+.setting label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--green);
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    flex: 1;
+}
+
+.control {
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 17px;
+    min-height: 65px;
+    transition: filter 0.1s, transform 0.1s;
+}
+
+.control small {
+    font-size: 10px;
+    opacity: 0.75;
+    font-weight: normal;
+}
+
+.control.active {
+    filter: brightness(1.45);
+    transform: scale(0.97);
+    outline: 2px solid white;
+}
+
+.accelerate {
+    background: #187d61;
+}
+
+.reverse {
+    background: #46546c;
+}
+
+.jump {
+    background: #a65b22;
+}
+
+.boost {
+    background: #235fc0;
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 10px;
+    gap: 10px;
+}
+
+button:focus-visible {
+    outline: 2px solid white;
+}
+
+@media (orientation: portrait) {
+    .app {
+        padding: 10px;
+    }
+
+    .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        overflow-y: auto;
+    }
+
+    .panel {
+        min-height: 210px;
+    }
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="app">
 
-    <h1>SILICONPEN</h1>
-    <div class="subtitle">MOTION CONTROLLER · SENSOR TEST</div>
+<header>
+    <div class="brand">SILICON<span>PEN</span></div>
+    <div class="status" id="status">SENSOR NOT ENABLED</div>
+</header>
+<button id="start" style="background:#246bfe;padding:10px;border-radius:9px">
+    ENABLE MOTION SENSOR
+</button>
+<div class="main">
 
-    <button id="start">ENABLE MOTION SENSOR</button>
-    <button id="calibrate">CALIBRATE NEUTRAL</button>
-    <div class="readings">
-        <div class="reading">
-            <div class="label">ALPHA</div>
-            <div class="value" id="alpha">--</div>
-        </div>
+    <!-- STEERING PANEL -->
+    <section class="panel">
 
-        <div class="reading">
-            <div class="label">BETA</div>
-            <div class="value" id="beta">--</div>
-        </div>
+        <div class="section-title">MOTION STEERING</div>
 
-        <div class="reading">
-            <div class="label">GAMMA</div>
-            <div class="value" id="gamma">--</div>
-        </div>
-    </div>
-
-    <div class="steering">
-        <div class="label">STEERING ANGLE (GAMMA)</div>
-        <div class="value" id="steering">0°</div>
+        <div class="steering-value" id="steering">0°</div>
+        <div class="steering-label">STEERING INPUT</div>
 
         <div class="track">
             <div class="marker" id="marker"></div>
         </div>
 
-        <div class="label">LEFT ← NEUTRAL → RIGHT</div>
-    </div>
+        <div class="directions">
+            <span>LEFT</span>
+            <span>NEUTRAL</span>
+            <span>RIGHT</span>
+        </div>
 
-    <div class="status" id="status">Sensor not enabled</div>
+        <button class="calibrate" id="calibrate">
+            CALIBRATE NEUTRAL
+        </button>
+
+        <div class="settings">
+
+            <div class="setting">
+                <label>
+                    <span>SENSITIVITY</span>
+                    <span id="sensitivityValue">1.0×</span>
+                </label>
+                <input id="sensitivity"
+                       type="range"
+                       min="0.5" max="2.0"
+                       step="0.1" value="1">
+            </div>
+
+            <div class="setting">
+                <label>
+                    <span>DEAD ZONE</span>
+                    <span id="deadZoneValue">3°</span>
+                </label>
+                <input id="deadZone"
+                       type="range"
+                       min="0" max="10"
+                       step="1" value="3">
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ACTION PANEL -->
+    <section class="panel">
+
+        <div class="section-title">DRIVING CONTROLS</div>
+
+        <div class="controls">
+
+            <button class="control accelerate"
+                    data-command="accelerate">
+                ▲ ACCELERATE
+                <small>HOLD · W</small>
+            </button>
+
+            <button class="control reverse"
+                    data-command="reverse">
+                ▼ REVERSE
+                <small>HOLD · S</small>
+            </button>
+
+            <button class="control jump"
+                    data-command="jump">
+                JUMP
+                <small>HOLD · SPACE</small>
+            </button>
+
+            <button class="control boost"
+                    data-command="boost">
+                BOOST
+                <small>HOLD · SHIFT</small>
+            </button>
+
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <span id="calibrationStatus">NOT CALIBRATED</span>
+    <span id="orientationStatus">LANDSCAPE CONTROLLER</span>
+</footer>
 
 </div>
 
 <script>
-    let neutralBeta = 0;
-let calibrated = false;
 
-let steeringLimit = 30;
+// =====================================
+// CONTROLLER STATE
+// =====================================
+
+let neutralBeta = null;
+let currentBeta = null;
+let steering = 0;
+
+let sensitivity = 1.0;
 let deadZone = 3;
-const startButton = document.getElementById("start");
+const steeringLimit = 35;
 
+const commands = {
+    accelerate: false,
+    reverse: false,
+    jump: false,
+    boost: false
+};
 
-let currentBeta = 0;
+// =====================================
+// DOM ELEMENTS
+// =====================================
 
-function handleOrientation(event) {
-    const alpha = event.alpha;
-    const beta = event.beta;
-    const gamma = event.gamma;
+const statusElement = document.getElementById("status");
+const steeringElement = document.getElementById("steering");
+const marker = document.getElementById("marker");
 
-    if (beta === null) return;
+// =====================================
+// SENSOR INITIALISATION
+// =====================================
 
-    currentBeta = beta;
+document.getElementById("start").addEventListener("click", startSensor);
 
-    document.getElementById("alpha").textContent =
-        alpha?.toFixed(1) ?? "--";
-
-    document.getElementById("beta").textContent =
-        beta.toFixed(1) + "°";
-
-    document.getElementById("gamma").textContent =
-        gamma?.toFixed(1) ?? "--";
-
-    if (!calibrated) return;
-
-    let steering = beta - neutralBeta;
-
-    if (Math.abs(steering) < deadZone) {
-        steering = 0;
-    }
-
-    steering = Math.max(
-        -steeringLimit,
-        Math.min(steeringLimit, steering)
-    );
-
-    document.getElementById("steering").textContent =
-        steering.toFixed(1) + "°";
-
-    const position =
-        ((steering + steeringLimit) /
-        (2 * steeringLimit)) * 100;
-
-    document.getElementById("marker").style.left =
-        position + "%";
-}
-
-document.getElementById("calibrate").addEventListener("click", () => {
-    neutralBeta = currentBeta;
-    calibrated = true;
-
-    document.getElementById("status").textContent =
-        "Calibrated at " + neutralBeta.toFixed(1) + "°";
-});
-
-startButton.addEventListener("click", async () => {
+async function startSensor() {
     try {
         if (typeof DeviceOrientationEvent === "undefined") {
-            document.getElementById("status").textContent =
-                "Device orientation is not supported";
-            return;
+            throw new Error("Orientation sensor unavailable");
         }
 
-        // Required by some browsers, particularly iOS.
         if (typeof DeviceOrientationEvent.requestPermission === "function") {
             const permission =
                 await DeviceOrientationEvent.requestPermission();
 
             if (permission !== "granted") {
-                document.getElementById("status").textContent =
-                    "Motion permission denied";
-                return;
+                throw new Error("Motion permission denied");
             }
         }
 
@@ -229,14 +434,168 @@ startButton.addEventListener("click", async () => {
             handleOrientation
         );
 
-        document.getElementById("status").textContent =
-            "Waiting for sensor data...";
-    } catch (error) {
-        document.getElementById("status").textContent =
-            "Error: " + error.message;
-    }
-});
-</script>
+        statusElement.textContent = "SENSOR ACTIVE";
+        statusElement.classList.add("ready");
 
+        if (screen.orientation?.lock) {
+            try {
+                await screen.orientation.lock("landscape");
+            } catch (error) {
+                // Orientation lock may be unsupported.
+            }
+        }
+
+    } catch (error) {
+        statusElement.textContent = error.message.toUpperCase();
+        statusElement.classList.remove("ready");
+    }
+}
+
+// =====================================
+// ORIENTATION HANDLER
+// =====================================
+
+function handleOrientation(event) {
+
+    if (event.beta === null) return;
+
+    currentBeta = event.beta;
+
+    if (neutralBeta === null) return;
+
+    // Difference relative to calibrated neutral.
+    let difference = currentBeta - neutralBeta;
+
+    // Handle the wraparound at +/-180 degrees.
+    difference = ((difference + 180) % 360 + 360) % 360 - 180;
+
+    // Apply dead zone.
+    if (Math.abs(difference) < deadZone) {
+        difference = 0;
+    } else {
+        difference -= Math.sign(difference) * deadZone;
+    }
+
+    // Apply sensitivity.
+    steering = difference * sensitivity;
+
+    // Limit output.
+    steering = Math.max(
+        -steeringLimit,
+        Math.min(steeringLimit, steering)
+    );
+
+    updateSteering();
+}
+
+// =====================================
+// CALIBRATION
+// =====================================
+
+document.getElementById("calibrate").addEventListener("click", () => {
+
+    if (currentBeta === null) {
+        document.getElementById("calibrationStatus").textContent =
+            "ENABLE SENSOR FIRST";
+        return;
+    }
+
+    neutralBeta = currentBeta;
+    steering = 0;
+
+    updateSteering();
+
+    document.getElementById("calibrationStatus").textContent =
+        "CALIBRATED · " + neutralBeta.toFixed(1) + "°";
+});
+
+// =====================================
+// STEERING DISPLAY
+// =====================================
+
+function updateSteering() {
+
+    steeringElement.textContent =
+        steering.toFixed(1) + "°";
+
+    const position =
+        ((steering + steeringLimit) /
+        (2 * steeringLimit)) * 100;
+
+    marker.style.left = position + "%";
+}
+
+// =====================================
+// SENSITIVITY AND DEAD ZONE
+// =====================================
+
+document.getElementById("sensitivity").addEventListener("input", event => {
+    sensitivity = Number(event.target.value);
+
+    document.getElementById("sensitivityValue").textContent =
+        sensitivity.toFixed(1) + "×";
+});
+
+document.getElementById("deadZone").addEventListener("input", event => {
+    deadZone = Number(event.target.value);
+
+    document.getElementById("deadZoneValue").textContent =
+        deadZone + "°";
+});
+
+// =====================================
+// TOUCH BUTTONS
+// =====================================
+
+document.querySelectorAll("[data-command]").forEach(button => {
+
+    const command = button.dataset.command;
+
+    function press(event) {
+        event.preventDefault();
+
+        if (button.dataset.pointer !== undefined) return;
+
+        button.dataset.pointer = event.pointerId;
+        button.setPointerCapture(event.pointerId);
+
+        commands[command] = true;
+        button.classList.add("active");
+    }
+
+    function release(event) {
+        if (button.dataset.pointer === undefined) return;
+
+        if (event && event.pointerId !== undefined &&
+            Number(button.dataset.pointer) !== event.pointerId) {
+            return;
+        }
+
+        delete button.dataset.pointer;
+        commands[command] = false;
+        button.classList.remove("active");
+    }
+
+    button.addEventListener("pointerdown", press);
+    button.addEventListener("pointerup", release);
+    button.addEventListener("pointercancel", release);
+    button.addEventListener("lostpointercapture", release);
+});
+
+// =====================================
+// EXPOSE STATE FOR NEXT STAGE
+// =====================================
+
+function getControllerState() {
+    return {
+        steering: steering,
+        accelerate: commands.accelerate,
+        reverse: commands.reverse,
+        jump: commands.jump,
+        boost: commands.boost
+    };
+}
+
+</script>
 </body>
 </html>
