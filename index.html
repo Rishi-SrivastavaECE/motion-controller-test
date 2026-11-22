@@ -110,7 +110,7 @@ button {
     <div class="subtitle">MOTION CONTROLLER · SENSOR TEST</div>
 
     <button id="start">ENABLE MOTION SENSOR</button>
-
+    <button id="calibrate">CALIBRATE NEUTRAL</button>
     <div class="readings">
         <div class="reading">
             <div class="label">ALPHA</div>
@@ -144,29 +144,65 @@ button {
 </div>
 
 <script>
+    let neutralBeta = 0;
+let calibrated = false;
+
+let steeringLimit = 30;
+let deadZone = 3;
 const startButton = document.getElementById("start");
 
+
+let currentBeta = 0;
 
 function handleOrientation(event) {
     const alpha = event.alpha;
     const beta = event.beta;
     const gamma = event.gamma;
 
+    if (beta === null) return;
+
+    currentBeta = beta;
+
     document.getElementById("alpha").textContent =
         alpha?.toFixed(1) ?? "--";
 
     document.getElementById("beta").textContent =
-        beta?.toFixed(1) ?? "--";
+        beta.toFixed(1) + "°";
 
     document.getElementById("gamma").textContent =
         gamma?.toFixed(1) ?? "--";
-    
+
+    if (!calibrated) return;
+
+    let steering = beta - neutralBeta;
+
+    if (Math.abs(steering) < deadZone) {
+        steering = 0;
+    }
+
+    steering = Math.max(
+        -steeringLimit,
+        Math.min(steeringLimit, steering)
+    );
+
     document.getElementById("steering").textContent =
-        (beta ?? 0).toFixed(1) + "°";
+        steering.toFixed(1) + "°";
+
+    const position =
+        ((steering + steeringLimit) /
+        (2 * steeringLimit)) * 100;
+
+    document.getElementById("marker").style.left =
+        position + "%";
+}
+
+document.getElementById("calibrate").addEventListener("click", () => {
+    neutralBeta = currentBeta;
+    calibrated = true;
 
     document.getElementById("status").textContent =
-        "Sensor active";
-}
+        "Calibrated at " + neutralBeta.toFixed(1) + "°";
+});
 
 startButton.addEventListener("click", async () => {
     try {
